@@ -35,12 +35,17 @@ def add_link(link: str):
     param1::: link - string represention of Zettelkasten link
     return::: prepared link string [[ ]] 
     """
-    return "[[" + link + "]]"
+    if link[0] == "#": # support for TAGS
+        return link
+    else:
+        return "[[" + link + "]]"
 
 
 def prepare_multiple_links(links: list):
     """
-
+    function takes list of links and prepares string to write into markdown file
+    param1::: links - list of links
+    return::: result which contains string with all links prepared for Markdown template
     """
     result = str()
     for i in links:
@@ -95,8 +100,15 @@ def get_index(path=None):
     print(result)
     return result
 
+"""
+def read_template(filename: str):
+    result = dict()
+    with open(filename, mode="r", encoding="utf8" as f:
 
-def prepare_data(name: str, links: str):
+    pass
+"""
+
+def prepare_data(name: str, links: str):  # DEFAULT TEMPLATE
     """
     function prepares data to simple template of markdown file.
     param1::: name - string represents name of Markdown Note
@@ -151,12 +163,12 @@ def prepare_data_2_save(plan, index):
             data = prepare_data(splitted_row[0], prepare_multiple_links(links))
         filename = splitted_row[0] + '.md'
         print(filename)
-    	# check if file already exists
+        # check if file already exists
         if filename_exists(filename, index_of_files) is True:
-    	    print("FILE ALREADY EXISTS")
+            print("FILE ALREADY EXISTS")
         elif filename_exists(filename,index_of_files) is False:
-    	    write_md(filename=filename, data=data)
-    	    print("SAVED", filename)
+            write_md(filename=filename, data=data)
+            print("SAVED", filename)
     return True
     
 
