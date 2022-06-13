@@ -1,5 +1,6 @@
 import time
 import os
+import sys
 
 # config
 global SEPARATOR, END_SYMBOL
@@ -174,6 +175,13 @@ def prepare_data_2_save(plan, index):
 
 
 if __name__ == "__main__":
+
+    # check if file was passed as argument
+    if sys.argv[1] is not None:
+        filename = sys.argv[1]
+    else:
+        pass
+
     # READ FILE CONTAINING PLAN
     try:
         plan = read_plan(filename="plan.txt")
@@ -196,6 +204,7 @@ if __name__ == "__main__":
     # a = prepare_multiple_links(["hallo", "hallo"])
     # print(a)
 
+    print(sys.argv)
 
     
     

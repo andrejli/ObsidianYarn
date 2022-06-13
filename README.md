@@ -24,3 +24,5 @@ Obsidian
 # Use via CLI in VAULT 
 'python3 write_md.py'
 
+# Use via CLI in VAULT
+'python3 write_md.py plan.txt'
