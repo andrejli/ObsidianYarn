@@ -3,9 +3,11 @@ import os
 import sys
 
 # config
-global SEPARATOR, END_SYMBOL
+global SEPARATOR, END_SYMBOL, TAGS
 SEPARATOR = "\t"
 END_SYMBOL = "<>\n"
+TAGS = ""
+
 
 
 def read_plan(filename):
@@ -36,8 +38,10 @@ def add_link(link: str):
     param1::: link - string represention of Zettelkasten link
     return::: prepared link string [[ ]] 
     """
+    global TAGS
     if link[0] == "#": # support for TAGS
-        return link
+        TAGS += link + " "
+        return ""
     else:
         return "[[" + link + "]]"
 
@@ -82,7 +86,7 @@ def duplicity_check(plan: list, index: list):  # TODO DOesnt work
     return False
         
 
-def get_index(path=None):
+def get_index(path=None):  # TODO Move to IO
     """
     function makes index of all .md files in directory and throws them to
     list.
@@ -109,7 +113,7 @@ def read_template(filename: str):
     pass
 """
 
-def prepare_data(name: str, links: str):  # DEFAULT TEMPLATE
+def prepare_data(name: str, links: str, tags: str):  # DEFAULT TEMPLATE
     """
     function prepares data to simple template of markdown file.
     param1::: name - string represents name of Markdown Note
@@ -117,15 +121,22 @@ def prepare_data(name: str, links: str):  # DEFAULT TEMPLATE
     return::: prepared string
     """ 
     # TODO In future there will data from plan should be parsed and put into specified template from templates directory. 
+    global TAGS
+    tags = TAGS
     result = "# "
     result += name + "\n\n"  
     # TODO check if not tag example #topic
     result += "## Links "+ links
+    result += "\n## Tags " + tags
     result += "\n\nCreated by SCRIPT"
     return result
 
+def prepare_data_custom(name: str, links: str, tags: str):
+    pass
 
-def filename_exists(filename: str, index: list):
+
+
+def filename_exists(filename: str, index: list):  # TODO Move to IO
     """
     Function checks if file already exists
     param1::: filename - String representation which contains path and file
@@ -156,12 +167,13 @@ def prepare_data_2_save(plan, index):
     Function iterates thru plan and prepare values to write to files. 
     First value in plan is NAME of markdown file, other value is LINK
     """
+    global TAGS
     for row in plan:
         splitted_row = row.split(SEPARATOR)
         print("ROW :",splitted_row)
         links = splitted_row[1:] # get rid of symbol from last link
         if len(splitted_row) > 1:
-            data = prepare_data(splitted_row[0], prepare_multiple_links(links))
+            data = prepare_data(splitted_row[0], prepare_multiple_links(links), TAGS)
         filename = splitted_row[0] + '.md'
         print(filename)
         # check if file already exists
@@ -177,10 +189,10 @@ def prepare_data_2_save(plan, index):
 if __name__ == "__main__":
 
     # check if file was passed as argument
-    if sys.argv[1] is not None:
-        filename = sys.argv[1]
+    if len(sys.argv) == 1:
+        print("NO FILE ARGUMENT")
     else:
-        pass
+        filename = sys.argv[1]
 
     # READ FILE CONTAINING PLAN
     try:
