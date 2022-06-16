@@ -26,3 +26,7 @@ Obsidian
 
 # Use via CLI in VAULT
 'python3 write_md.py plan.txt'
+
+# tests
+
+
