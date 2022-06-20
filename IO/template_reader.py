@@ -1,5 +1,5 @@
 
-
+import os
 import re
 
 class TemplateReader(object):
@@ -55,10 +55,12 @@ class TemplateReader(object):
 
 
 if __name__ == "__main__":
-	obj = TemplateReader(filename="template")
+	file = os.getcwd()+"/templates/template"
+	obj = TemplateReader(filename=file)
 	obj.read_template()
 	print(obj.rows)
 	print(obj.tags)
 	print(len(obj.rows))
 	obj.purge_last30blankrows()
 	obj.seek_tags_and_links()
+	
