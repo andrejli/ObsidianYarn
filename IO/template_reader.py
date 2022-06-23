@@ -3,6 +3,14 @@ import os
 import re
 
 class TemplateReader(object):
+	'''
+	Instance of class reads given template file and stores rows to dictionary.
+	To Avoid End symbol if reads more than 30 empty rows stop reading the file.
+	Automatically detects <Tags> and <Links> as places to store them when programm 
+	is generating MD files for Obsidian.
+	param1::: filename with PATH - containig template file
+	return::: NONE
+	'''
 
 	def __init__(self, filename):
 		self.template_file = filename
