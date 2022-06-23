@@ -14,7 +14,7 @@ TAGS = ""
 
 
 
-def add_link(link: str):
+def add_link(link: str): # TODO move to CORE
     """
     function add link to string of links in markdown file. If first character 
     is # then leave it for further processing
@@ -29,7 +29,7 @@ def add_link(link: str):
         return "[[" + link + "]]"
 
 
-def prepare_multiple_links(links: list):
+def prepare_multiple_links(links: list):  # TODO Move to CORE
     """
     function takes list of links and prepares string to write into markdown file
     param1::: links - list of links
@@ -119,17 +119,6 @@ def prepare_data_custom(name: str, links: str, tags: str):
 
 
 
-def filename_exists(filename: str, index: list):  # TODO Move to IO
-    """
-    Function checks if file already exists
-    param1::: filename - String representation which contains path and file
-    param2::: index of files in directory
-    return::: Boolean value True if file already exists
-    """
-    if filename in index_of_files:
-        return True
-    else:
-        return False
 
 
 def write_md(filename, data):  # TODO Move to IO 
@@ -145,7 +134,7 @@ def write_md(filename, data):  # TODO Move to IO
         return True
 
 
-def prepare_data_2_save(plan, index):
+def prepare_data_2_save(plan, index):  # TODO Move to CORE
     """
     Function iterates thru plan and prepare values to write to files. 
     First value in plan is NAME of markdown file, other value is LINK
