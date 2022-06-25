@@ -2,12 +2,10 @@ import time
 import os
 import sys
 from IO.io_plan import *
-
+from configs.config import *
 # config
-global SEPARATOR, END_SYMBOL, TAGS
-SEPARATOR = "\t"
-END_SYMBOL = "<>\n"
-TAGS = ""
+
+
 
 
 
@@ -99,7 +97,7 @@ def prepare_data_2_save(plan, index):  # TODO Move to CORE
     Function iterates thru plan and prepare values to write to files. 
     First value in plan is NAME of markdown file, other value is LINK
     """
-    global TAGS
+    global TAGS, SEPARATOR
     for row in plan:
         splitted_row = row.split(SEPARATOR)
         print("ROW :",splitted_row)
@@ -119,6 +117,7 @@ def prepare_data_2_save(plan, index):  # TODO Move to CORE
 
 
 if __name__ == "__main__":
+    print(SEPARATOR, TAGS, END_SYMBOL)
 
     # check if file was passed as argument
     if len(sys.argv) == 1:
