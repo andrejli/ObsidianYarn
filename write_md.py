@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
     # READ FILE CONTAINING PLAN
     try:
-        plan = read_plan(filename="plan.txt")
+        plan = read_plan(filename=PLANFILE)
     except FileNotFoundError:
         plan = []
         print("PLAN FILE DOESN'T EXIST")

@@ -12,10 +12,11 @@ def read_plan(filename):
     """
     result = list()
     with open(file=filename, mode="r", encoding="utf8") as f:
+        print(file_is_markdown(path=filename))
         while True:
             row = f.readline()
             print(row)
-            if row == "<>\n":
+            if row == "<>\n":  # use defined END SYMBOL in config file
                 break   # defined end 
             else:
                 result.append(row)
@@ -41,6 +42,17 @@ def get_index(path=None):  # TODO Move to IO
             result.append(i)
     print(result)
     return result
+
+def file_is_markdown(path: str):
+    """
+    function takes path with file and checks if it it markdown file
+    param1::: path - string containing path and filename
+    return::: Boolean - 
+    """
+    if path[-3:] == '.md':
+        return True
+    else:
+        return False
 
 
 

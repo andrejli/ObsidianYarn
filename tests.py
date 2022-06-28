@@ -10,6 +10,13 @@ def test_TR_instance():
 	obj = TemplateReader(filename="template")
 	assert isinstance(obj, TemplateReader) == True
 
+def test_file_is_markdown():
+	PATH = os.getcwd() + "/tests/test.md"
+	assert file_is_markdown(path=PATH) == True
+	PATH = os.getcwd() + "/tests/test_plan"
+	assert file_is_markdown(path=PATH) == False
+
+
 def test_get_index():
 	PATH = os.getcwd() + "/tests/"
 	assert get_index(PATH) == ["test.md"]
