@@ -53,8 +53,10 @@ class TemplateReader(object):
 				print(hit.span())
 				if hit.group(0) == '<Tags>':
 					print("FOUND TAGS")
+					self.rows[i]=[self.rows[i], hit.span()]
 				if hit.group(0) == '<Links>':
 					print("FOUND LINKS")
+					self.rows[i]=[self.rows[i], hit.span()]
 			except AttributeError:
 				print("NONE")
 			finally:
@@ -64,6 +66,7 @@ class TemplateReader(object):
 
 if __name__ == "__main__":
 	file = os.getcwd()+"/templates/template"
+	print(file)
 	obj = TemplateReader(filename=file)
 	obj.read_template()
 	print(obj.rows)

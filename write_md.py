@@ -1,6 +1,7 @@
 import time
 import os
 import sys
+from IO.template_reader import *
 from IO.io_plan import *
 from configs.config import *
 # config
@@ -117,6 +118,11 @@ def prepare_data_2_save(plan, index):  # TODO Move to CORE
 
 
 if __name__ == "__main__":
+
+    """ 
+    M A I N   P R O G R A M M - U N D E R   D E V E L O P M E N T
+    
+    """
     print(SEPARATOR, TAGS, END_SYMBOL)
 
     # check if file was passed as argument
@@ -148,6 +154,24 @@ if __name__ == "__main__":
     # print(a)
 
     print(sys.argv)
+
+    
+    """
+
+    file = os.getcwd()+"/templates/template"
+    print(file)
+    obj = TemplateReader(filename=file)
+    obj.read_template()
+    print(obj.rows)
+    print(obj.tags)
+    print(len(obj.rows))
+    obj.purge_last30blankrows()
+    obj.seek_tags_and_links()
+    print(obj.rows)
+    print(len(obj.rows.keys()))
+
+    """
+
 
     
     
