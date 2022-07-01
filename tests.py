@@ -6,7 +6,12 @@ from IO.template_reader import TemplateReader
 
 def test_read_plan():
 	file = os.getcwd()+"/tests/test_plan"
-	assert read_plan(file) == ['Alpha\n', 'Beta\n', 'Gama\n', 'Delta\n']
+	assert read_plan(file) == ['Alpha\n', 'Beta\n', 'Beta\n', 'Gama\n', 'Delta\n']
+
+def test_duplicity_plan():
+	file = os.getcwd()+"/tests/test_plan"  # TODO LETs CHECK AGAIN
+	a = duplicity_check_plan(plan=file)
+	assert a == True
 
 def test_TR_instance():
 	obj = TemplateReader(filename="template")

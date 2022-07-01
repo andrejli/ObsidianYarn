@@ -98,21 +98,21 @@ def prepare_data_2_save(plan, index):  # TODO Move to CORE
     Function iterates thru plan and prepare values to write to files. 
     First value in plan is NAME of markdown file, other value is LINK
     """
-    global TAGS, SEPARATOR
-    for row in plan:
-        splitted_row = row.split(SEPARATOR)
-        print("ROW :",splitted_row)
+    global TAGS, SEPARATOR  # get global variables from config
+    for row in plan:  # loop thru plan by rows
+        splitted_row = row.split(SEPARATOR)  # split row to list 
+        print("ROW :",splitted_row)  # control print 
         links = splitted_row[1:] # get rid of symbol from last link
-        if len(splitted_row) > 1:
+        if len(splitted_row) > 1:  # if more then 1 
             data = prepare_data(splitted_row[0], prepare_multiple_links(links), TAGS)
         filename = splitted_row[0] + '.md'
-        print(filename)
+        print(filename)  # control print created filename
         # check if file already exists
         if filename_exists(filename, index_of_files) is True:
             print("FILE ALREADY EXISTS")
         elif filename_exists(filename,index_of_files) is False:
-            write_md(filename=filename, data=data)
-            print("SAVED", filename)
+            write_md(filename=filename, data=data)  # if file is new write him down
+            print("SAVED", filename)  # control print 
     return True
     
 
@@ -123,9 +123,9 @@ if __name__ == "__main__":
     M A I N   P R O G R A M M - U N D E R   D E V E L O P M E N T
     
     """
-    print(SEPARATOR, TAGS, END_SYMBOL)
+    print(SEPARATOR, TAGS, END_SYMBOL)  # Control print
 
-    # check if file was passed as argument
+    # check if file was passed as argument via CLI
     if len(sys.argv) == 1:
         print("NO FILE ARGUMENT")
     else:
@@ -133,37 +133,40 @@ if __name__ == "__main__":
 
     # READ FILE CONTAINING PLAN
     try:
-        plan = read_plan(filename=PLANFILE)
+        plan = read_plan(filename=PLANFILE)  # use function read plan from IO.io_plan
     except FileNotFoundError:
         plan = []
         print("PLAN FILE DOESN'T EXIST")
+        # TODO Make a New Plan File
     finally:
+        # TODO Log if plan file was successfully loaded
         pass
     
     # get index of existing Markdown files
-    index_of_files = get_index()
-    print(index_of_files)
+    index_of_files = get_index()  # use function get_index from IO.io_plan
+    print(index_of_files)  # control print all collected Markdown files
     
     #check if doesnt contain duplicity
-    # duplicity_check(plan, index_of_files)
+    a = duplicity_check_plan(plan)  # TODO Does'nt work
+    print(a)
 
     # save prepared data to files
-    prepare_data_2_save(plan, index_of_files)
+    prepare_data_2_save(plan, index_of_files)  #  reads row from plan and generates Markdown file
 
-    # a = prepare_multiple_links(["hallo", "hallo"])
-    # print(a)
+    a = prepare_multiple_links(["hallo", "hallo"])
+    print(a)
 
-    print(sys.argv)
+    print(sys.argv)  # control print all arguments passed via CLI
 
     
     """
 
-    file = os.getcwd()+"/templates/template"
-    print(file)
-    obj = TemplateReader(filename=file)
-    obj.read_template()
-    print(obj.rows)
-    print(obj.tags)
+    file = os.getcwd()+"/templates/template"  # variable file is defined as file from templates folder
+    print(file)  # control print
+    obj = TemplateReader(filename=file)  # defines instance of TemplateReader class
+    obj.read_template() # read template from template file
+    print(obj.rows)  # control print instance rows as dictionary
+    print(obj.tags)  # 
     print(len(obj.rows))
     obj.purge_last30blankrows()
     obj.seek_tags_and_links()
@@ -171,6 +174,8 @@ if __name__ == "__main__":
     print(len(obj.rows.keys()))
 
     """
+
+    
 
 
     

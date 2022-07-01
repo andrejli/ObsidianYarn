@@ -1,4 +1,5 @@
 import os
+from configs.config import SEPARATOR
 
 END_SYMBOL = ""
 
@@ -70,7 +71,7 @@ def filename_exists(filename: str, index: list):  # TODO Move to IO
         return False
 
 
-def duplicity_check(plan: list, index: list):  # TODO DOesnt work
+def duplicity_check_plan(plan: list):  # TODO DOesnt work
     """
     function checks plan file and index of file if there is not duplicity
     in nodes or files.
@@ -80,8 +81,18 @@ def duplicity_check(plan: list, index: list):  # TODO DOesnt work
     """
     nodes = []
     for i in plan:
-        node = i.split(SEPARATOR)
-        nodes.append(node[0])
+        node = i.split(SEPARATOR)  # splits row into list
+        nodes.append(node[0])  # adds name (first value) from plan to nodes
+    
+    nodes_set = set(nodes)  # define new variable as set 
+    if len(nodes) != len(nodes_set):  # if length of nodes is not same as nodes_set
+        print("DUPLICITY IN PLAN DETECTED", len(nodes), len(nodes_set))
+        return True
+
+    else:
+        print("DUPLICITY IN PLAN NOT DETECTED")
+        return False
+    '''
     for i in nodes:
         if nodes.count(i) > 1:
             print("PLAN DUPLICITY DETECTED IN NODE :", i)
@@ -93,3 +104,4 @@ def duplicity_check(plan: list, index: list):  # TODO DOesnt work
             print("FILE DUPLICITY DETECTED IN NODE :", i)
             return True
     return False
+    '''
