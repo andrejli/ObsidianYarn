@@ -30,6 +30,11 @@ def test_file_is_markdown():
 	assert file_is_markdown(path=PATH) == False
 
 
+# T E M P L A T E S   T E S T S 
+
+
+
+
 def test_get_index():
 	PATH = os.getcwd() + "/tests/"
 	assert get_index(PATH) == ["test.md"]

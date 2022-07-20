@@ -60,7 +60,7 @@ class TemplateReader(object):
 			except AttributeError:
 				print("NONE")
 			finally:
-				pass
+				return self.rows
 
 
 

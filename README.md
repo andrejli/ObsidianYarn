@@ -6,7 +6,9 @@ Data are stored as into ROWS
 Each Rows starts with NAME of note [[Duplicit Notes are Possible]]
 ... continous with name of links
 
-In future will be a support for templates. Now you can edit template only in SOURCE.
+Programm now supports CUSTOM Templates from template folder. You can modify your template and program generate output in theri format. 
+
+AUTHOR IS CONFIGURABLE IN config/config.py
 
 Files will be generated without CONTENT except NAME and Links
 Already created files are not OVERWRITTEN by Script.
@@ -14,8 +16,11 @@ Already created files are not OVERWRITTEN by Script.
 Happy Hacking :)
 
 # Install
-clone repository to your computer
-copy to Vault Folder
+1. clone repository to your computer
+2. copy ALL to Vault Folder
+3. modify your plan or 000_index__card
+4. Configure config/config.py
+5. run via CLI as python script
 
 # DEpendencies
 python3.7 and above

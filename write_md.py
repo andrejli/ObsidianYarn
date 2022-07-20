@@ -18,7 +18,10 @@ def add_link(link: str): # TODO move to CORE
     function add link to string of links in markdown file. If first character 
     is # then leave it for further processing
     param1::: link - string represention of Zettelkasten link
-    return::: prepared link string [[ ]] 
+    return::: prepared link string [[ ]]
+
+    WARNING If link is tag like #python will be automatically put into 
+    global variable TAGS.
     """
     global TAGS
     if link[0] == "#": # support for TAGS
@@ -44,22 +47,33 @@ def prepare_multiple_links(links: list):  # TODO Move to CORE
 
 
 
-        
-
-
-"""
 def read_template(filename: str):
+    """
+    Function reads template and stores ROWS into Dictionary. Then 
+    Automatically finds predefined <tags> and put them separately.
+    param1::: filename of template file in templates folder  # TODO Make It configurable
+    return::: Dictionary containing all rows of template
+    """
     result = dict()
-    with open(filename, mode="r", encoding="utf8" as f:
+    # TODO Check if template exists
+    file = os.getcwd()+"/templates/"+filename
+    print(file)
+    obj = TemplateReader(filename=file)
+    obj.read_template()
+    print(obj.rows)
+    print(obj.tags) # prints out founded tags (links, author, tags)
+    print(len(obj.rows))
+    obj.purge_last30blankrows() # get rid of empty space 
+    result = obj.seek_tags_and_links()
+    return result
 
-    pass
-"""
 
 def prepare_data(name: str, links: str, tags: str):  # DEFAULT TEMPLATE
     """
-    function prepares data to simple template of markdown file.
+    function prepares data to default template of markdown file.
     param1::: name - string represents name of Markdown Note
     param2::: link - string represents link to another note
+    param3::: tags: Is overwritten by global variable TAGS
     return::: prepared string
     """ 
     # TODO In future there will data from plan should be parsed and put into specified template from templates directory. 
@@ -73,11 +87,42 @@ def prepare_data(name: str, links: str, tags: str):  # DEFAULT TEMPLATE
     result += "\n\nCreated by SCRIPT"
     return result
 
+
 def prepare_data_custom(name: str, links: str, tags: str):
-    pass
+    """
+    function prepares data for CUSTOM template saved in templates folder
+    param1::: name - string represents name of Markdown Note
+    param2::: link - string represents link to another note
+    param3::: tags: Is overwritten by global variable TAGS
+    return::: prepared string
+    
+    """
+    global TAGS, AUTHOR
+    tags = TAGS
+    result = str()
+    loaded_template=read_template(filename="template")
+    for i in loaded_template:
+        # print("ROW CONTENT :", i, loaded_template[i]) # control print
+        if "<Name>" in loaded_template[i]:
+            result += "# "+ name + "\n"
+            continue
+        if "<Tags>" in loaded_template[i]:
+            result += "## TAGS :"+ tags + "\n"
+            continue
+        if "Links" in loaded_template[i]:
+            result += "## LINKS : "+ links + "\n"
+            continue
+        if "<Author>" in loaded_template[i]:
+            result += "### Was Created By : "+ AUTHOR + "\n"
+            continue
+        if "<Date>" in loaded_template[i]:
+            date = time.strftime("%d.%m.%Y %H:%M")
+            result += "### Date : "+ date + "\n"
+            continue
+        else:
+            result += loaded_template[i]
 
-
-
+    return result
 
 
 def write_md(filename, data):  # TODO Move to IO 
@@ -104,7 +149,7 @@ def prepare_data_2_save(plan, index):  # TODO Move to CORE
         print("ROW :",splitted_row)  # control print 
         links = splitted_row[1:] # get rid of symbol from last link
         if len(splitted_row) > 1:  # if more then 1 
-            data = prepare_data(splitted_row[0], prepare_multiple_links(links), TAGS)
+            data = prepare_data_custom(splitted_row[0], prepare_multiple_links(links), TAGS)
         filename = splitted_row[0] + '.md'
         print(filename)  # control print created filename
         # check if file already exists
@@ -123,7 +168,7 @@ if __name__ == "__main__":
     M A I N   P R O G R A M M - U N D E R   D E V E L O P M E N T
     
     """
-    print(SEPARATOR, TAGS, END_SYMBOL)  # Control print
+    print(SEPARATOR, TAGS, END_SYMBOL, AUTHOR)  # Control print
 
     # check if file was passed as argument via CLI
     if len(sys.argv) == 1:
@@ -159,21 +204,16 @@ if __name__ == "__main__":
     print(sys.argv)  # control print all arguments passed via CLI
 
     
-    """
 
-    file = os.getcwd()+"/templates/template"  # variable file is defined as file from templates folder
-    print(file)  # control print
-    obj = TemplateReader(filename=file)  # defines instance of TemplateReader class
-    obj.read_template() # read template from template file
-    print(obj.rows)  # control print instance rows as dictionary
-    print(obj.tags)  # 
-    print(len(obj.rows))
-    obj.purge_last30blankrows()
-    obj.seek_tags_and_links()
-    print(obj.rows)
-    print(len(obj.rows.keys()))
 
     """
+
+    a = prepare_data_custom(name="# Andrea", links= "[[Hello]]", tags="#python")
+    print(a)
+
+    """
+
+    
 
     
 
