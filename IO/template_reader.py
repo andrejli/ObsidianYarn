@@ -18,6 +18,12 @@ class TemplateReader(object):
 		self.tags = list()
 
 	def read_template(self):
+		'''
+		Method reads template file with Infinite loop and counts Empty rows
+		If empty lines counter reach 30 lines, stops reading files and
+		return boolean True
+		return::: Boolean True means command was executed
+		'''
 		blank_counter = 0
 		counter = 0
 		with open(file=self.template_file, mode="r", encoding="utf8") as f:
@@ -34,8 +40,12 @@ class TemplateReader(object):
 					return True
 				print(row_content)
 
-				
+			
 	def purge_last30blankrows(self):
+		'''
+		Method purges 30 empty lines from template.
+		return::: Boolean True means Command was executed
+		'''
 		result = dict()
 		for i in range(0, len(self.rows)-30):
 			result[i] = self.rows[i]
@@ -45,6 +55,11 @@ class TemplateReader(object):
 
 
 	def seek_tags_and_links(self): # TODO Both Tags and Links can not be in One Row
+		
+		'''
+		Method crawls thru readed template and finds rows and position to 
+		where to put data.
+		'''
 		for i in range(0,len(self.rows)):
 			
 			hit = re.search(r'(<[A-Z])\w+>', self.rows[i])
@@ -56,7 +71,7 @@ class TemplateReader(object):
 					self.rows[i]=[self.rows[i], hit.span()]
 				if hit.group(0) == '<Links>':
 					print("FOUND LINKS")
-					self.rows[i]=[self.rows[i], hit.span()]
+					self.rows[i]=[self.rows[i], hit.span()]  # TODO Use span to place items
 			except AttributeError:
 				print("NONE")
 			finally:

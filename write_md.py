@@ -60,11 +60,12 @@ def read_template(filename: str):
     print(file)
     obj = TemplateReader(filename=file)
     obj.read_template()
-    print(obj.rows)
-    print(obj.tags) # prints out founded tags (links, author, tags)
-    print(len(obj.rows))
+    print("ROWS:,",obj.rows)
+    print("TAGS:",obj.tags) # prints out founded tags (links, author, tags)
+    print("LENGTH OF TEMPLATE:",len(obj.rows))
     obj.purge_last30blankrows() # get rid of empty space 
     result = obj.seek_tags_and_links()
+    print("FOUNDED TAGS:", result)
     return result
 
 
@@ -101,6 +102,7 @@ def prepare_data_custom(name: str, links: str, tags: str):
     tags = TAGS
     result = str()
     loaded_template=read_template(filename="template")
+    print(loaded_template)
     for i in loaded_template:
         # print("ROW CONTENT :", i, loaded_template[i]) # control print
         if "<Name>" in loaded_template[i]:
