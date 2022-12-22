@@ -1,3 +1,6 @@
+'''
+Something to write yet
+'''
 
 class TemplateReader(object):
 
