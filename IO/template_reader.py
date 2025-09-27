@@ -2,91 +2,74 @@
 import os
 import re
 
-class TemplateReader(object):
-	'''
-	Instance of class reads given template file and stores rows to dictionary.
-	To Avoid End symbol if reads more than 30 empty rows stop reading the file.
-	Automatically detects <Tags> and <Links> as places to store them when programm 
-	is generating MD files for Obsidian.
-	param1::: filename with PATH - containig template file
-	return::: NONE
-	'''
-
+class TemplateReader:
+	"""
+	Reads a template file and stores its rows in a dictionary.
+	Detects <Tags> and <Links> placeholders for Markdown generation.
+	"""
 	def __init__(self, filename):
 		self.template_file = filename
-		self.rows = dict()
-		self.tags = list()
+		self.rows = {}
+		self.tags = []
 
 	def read_template(self):
-		'''
-		Method reads template file with Infinite loop and counts Empty rows
-		If empty lines counter reach 30 lines, stops reading files and
-		return boolean True
-		return::: Boolean True means command was executed
-		'''
+		"""
+		Reads the template file line by line, storing each row in self.rows.
+		Stops reading if more than 30 consecutive blank lines are encountered.
+		"""
 		blank_counter = 0
 		counter = 0
-		with open(file=self.template_file, mode="r", encoding="utf8") as f:
-			while True:
-				row_content = f.readline()
-				self.rows[counter] = row_content
-				counter += 1
-				if row_content == "":
-					blank_counter += 1
-				else:
-					blank_counter = 0
+		try:
+			with open(self.template_file, mode="r", encoding="utf8") as f:
+				for row_content in f:
+					self.rows[counter] = row_content
+					counter += 1
+					if row_content.strip() == "":
+						blank_counter += 1
+					else:
+						blank_counter = 0
+					if blank_counter > 30:
+						break
+		except FileNotFoundError:
+			print(f"Template file not found: {self.template_file}")
+			self.rows = {}
+		except Exception as e:
+			print(f"Error reading template: {e}")
+			self.rows = {}
 
-				if blank_counter > 30:
-					return True
-				print(row_content)
-
-			
 	def purge_last30blankrows(self):
-		'''
-		Method purges 30 empty lines from template.
-		return::: Boolean True means Command was executed
-		'''
-		result = dict()
-		for i in range(0, len(self.rows)-30):
-			result[i] = self.rows[i]
-			print(result[i])
-		self.rows = result
+		"""
+		Removes the last 30 rows from self.rows (assumed to be blank).
+		"""
+		if len(self.rows) > 30:
+			self.rows = {i: self.rows[i] for i in range(len(self.rows) - 30)}
 		return True
 
+	def seek_tags_and_links(self):
+		"""
+		Scans self.rows for <Tags> and <Links> placeholders.
+		Returns a dictionary with row index as key and tuple (row_content, match_span) as value for found placeholders.
+		"""
+		found = {}
+		for i in range(len(self.rows)):
+			hit = re.search(r'<[A-Za-z]+>', self.rows[i])
+			if hit:
+				tag = hit.group(0)
+				if tag == '<Tags>' or tag == '<Links>':
+					found[i] = (self.rows[i], hit.span())
+		return found if found else self.rows
 
-	def seek_tags_and_links(self): # TODO Both Tags and Links can not be in One Row
-		
-		'''
-		Method crawls thru readed template and finds rows and position to 
-		where to put data.
-		'''
-		for i in range(0,len(self.rows)):
-			
-			hit = re.search(r'(<[A-Z])\w+>', self.rows[i])
-			try:
-				print(hit.group(0))
-				print(hit.span())
-				if hit.group(0) == '<Tags>':
-					print("FOUND TAGS")
-					self.rows[i]=[self.rows[i], hit.span()]
-				if hit.group(0) == '<Links>':
-					print("FOUND LINKS")
-					self.rows[i]=[self.rows[i], hit.span()]  # TODO Use span to place items
-			except AttributeError:
-				print("NONE")
-			finally:
-				return self.rows
 
 
 
 if __name__ == "__main__":
-	file = os.getcwd()+"/templates/template"
-	print(file)
+	file = os.path.join(os.getcwd(), "templates", "template")
+	print(f"Template file: {file}")
 	obj = TemplateReader(filename=file)
 	obj.read_template()
-	print(obj.rows)
-	print(obj.tags)
-	print(len(obj.rows))
+	print(f"Rows: {obj.rows}")
+	print(f"Tags: {obj.tags}")
+	print(f"Number of rows: {len(obj.rows)}")
 	obj.purge_last30blankrows()
-	obj.seek_tags_and_links()
+	print(f"Tag/Link positions: {obj.seek_tags_and_links()}")
 	

@@ -1,229 +1,153 @@
-'''
-DOCSTRING
-'''
-
 import time
 import os
 import sys
-from IO.template_reader import *
-from IO.io_plan import *
-from configs.config import *
-# config
+from IO.template_reader import TemplateReader
+from IO.io_plan import read_plan, get_index, filename_exists, duplicity_check_plan
+from configs.config import SEPARATOR, TAGS, END_SYMBOL, AUTHOR, PLANFILE
 
-
-
-
-
-
-
-
-def add_link(link: str): # TODO move to CORE
+def add_link(link: str) -> str:
     """
-    function add link to string of links in markdown file. If first character 
-    is # then leave it for further processing
-    param1::: link - string represention of Zettelkasten link
-    return::: prepared link string [[ ]]
-
-    WARNING If link is tag like #python will be automatically put into 
-    global variable TAGS.
+    Adds a Zettelkasten link to Markdown format. Tags (#) are added to TAGS global.
+    Args:
+        link: String representation of a Zettelkasten link.
+    Returns:
+        Markdown link string or empty if tag.
     """
     global TAGS
-    if link[0] == "#": # support for TAGS
+    if link.startswith("#"):
         TAGS += link + " "
         return ""
-    else:
-        return "[[" + link + "]]"
+    return f"[[{link}]]"
 
-
-def prepare_multiple_links(links: list):  # TODO Move to CORE
+def prepare_multiple_links(links: list) -> str:
     """
-    function takes list of links and prepares string to write into markdown file
-    param1::: links - list of links
-    return::: result which contains string with all links prepared for Markdown template
+    Prepares a string of Markdown links from a list.
+    Args:
+        links: List of link strings.
+    Returns:
+        String of Markdown links.
     """
-    result = str()
+    result = ""
     for i in links:
-        if i[-1] == "\n":
-            i = i[:-1]
+        i = i.rstrip("\n")
         result += " " + add_link(i)
-    print(result)
-    return result
+    return result.strip()
 
-
-
-def read_template(filename: str):
+def read_template(filename: str) -> dict:
     """
-    Function reads template and stores ROWS into Dictionary. Then 
-    Automatically finds predefined <tags> and put them separately.
-    param1::: filename of template file in templates folder  # TODO Make It configurable
-    return::: Dictionary containing all rows of template
+    Reads a template file and returns its rows and tag/link positions.
+    Args:
+        filename: Template filename in templates folder.
+    Returns:
+        Dictionary of template rows and tag/link positions.
     """
-    result = dict()
-    # TODO Check if template exists
-    file = os.getcwd()+"/templates/"+filename
-    print(file)
+    file = os.path.join(os.getcwd(), "templates", filename)
     obj = TemplateReader(filename=file)
     obj.read_template()
-    print("ROWS:,",obj.rows)
-    print("TAGS:",obj.tags) # prints out founded tags (links, author, tags)
-    print("LENGTH OF TEMPLATE:",len(obj.rows))
-    obj.purge_last30blankrows() # get rid of empty space 
-    result = obj.seek_tags_and_links()
-    print("FOUNDED TAGS:", result)
-    return result
+    obj.purge_last30blankrows()
+    return obj.seek_tags_and_links()
 
-
-def prepare_data(name: str, links: str, tags: str):  # DEFAULT TEMPLATE
+def prepare_data(name: str, links: str, tags: str) -> str:
     """
-    function prepares data to default template of markdown file.
-    param1::: name - string represents name of Markdown Note
-    param2::: link - string represents link to another note
-    param3::: tags: Is overwritten by global variable TAGS
-    return::: prepared string
-    """ 
-    # TODO In future there will data from plan should be parsed and put into specified template from templates directory. 
+    Prepares Markdown content for the default template.
+    Args:
+        name: Note name.
+        links: Markdown links string.
+        tags: Markdown tags string.
+    Returns:
+        Markdown content string.
+    """
     global TAGS
     tags = TAGS
-    result = "# "
-    result += name + "\n\n"  
-    # TODO check if not tag example #topic
-    result += "## Links "+ links
-    result += "\n## Tags " + tags
-    result += "\n\nCreated by SCRIPT"
+    result = f"# {name}\n\n"
+    result += f"## Links {links}\n"
+    result += f"## Tags {tags}\n\n"
+    result += "Created by SCRIPT"
     return result
 
-
-def prepare_data_custom(name: str, links: str, tags: str):
+def prepare_data_custom(name: str, links: str, tags: str) -> str:
     """
-    function prepares data for CUSTOM template saved in templates folder
-    param1::: name - string represents name of Markdown Note
-    param2::: link - string represents link to another note
-    param3::: tags: Is overwritten by global variable TAGS
-    return::: prepared string
-    
+    Prepares Markdown content for a custom template.
+    Args:
+        name: Note name.
+        links: Markdown links string.
+        tags: Markdown tags string.
+    Returns:
+        Markdown content string.
     """
     global TAGS, AUTHOR
     tags = TAGS
-    result = str()
-    loaded_template=read_template(filename="template")
-    print(loaded_template)
+    result = ""
+    loaded_template = read_template(filename="template")
     for i in loaded_template:
-        # print("ROW CONTENT :", i, loaded_template[i]) # control print
-        if "<Name>" in loaded_template[i]:
-            result += "# "+ name + "\n"
-            continue
-        if "<Tags>" in loaded_template[i]:
-            result += "## TAGS :"+ tags + "\n"
-            continue
-        if "Links" in loaded_template[i]:
-            result += "## LINKS : "+ links + "\n"
-            continue
-        if "<Author>" in loaded_template[i]:
-            result += "### Was Created By : "+ AUTHOR + "\n"
-            continue
-        if "<Date>" in loaded_template[i]:
+        row = loaded_template[i][0] if isinstance(loaded_template[i], tuple) else loaded_template[i]
+        if "<Name>" in row:
+            result += f"# {name}\n"
+        elif "<Tags>" in row:
+            result += f"## TAGS :{tags}\n"
+        elif "Links" in row:
+            result += f"## LINKS : {links}\n"
+        elif "<Author>" in row:
+            result += f"### Was Created By : {AUTHOR}\n"
+        elif "<Date>" in row:
             date = time.strftime("%d.%m.%Y %H:%M")
-            result += "### Date : "+ date + "\n"
-            continue
+            result += f"### Date : {date}\n"
         else:
-            result += loaded_template[i]
-
+            result += row
     return result
 
-
-def write_md(filename, data):  # TODO Move to IO 
+def write_md(filename: str, data: str) -> bool:
     """
-    Simple function takes filename and prepared data and saves them to Markdown file.
-    param1::: filename - string with path and filename
-    param2::: data - String prepared 
-    return::: Boolean status if data was saved
+    Writes prepared Markdown data to a file.
+    Args:
+        filename: Path and filename.
+        data: Markdown content string.
+    Returns:
+        True if saved successfully.
     """
-    with open(file=filename, mode="w", encoding="utf8") as f:
-        f.write(data)
-        print("SAVED")
+    try:
+        with open(filename, mode="w", encoding="utf8") as f:
+            f.write(data)
+        print(f"SAVED: {filename}")
         return True
+    except Exception as e:
+        print(f"Error saving {filename}: {e}")
+        return False
 
-
-def prepare_data_2_save(plan, index):  # TODO Move to CORE
+def prepare_data_2_save(plan: list, index_of_files: list) -> bool:
     """
-    Function iterates thru plan and prepare values to write to files. 
-    First value in plan is NAME of markdown file, other value is LINK
+    Iterates through the plan and writes Markdown files for each entry.
+    Args:
+        plan: List of plan rows.
+        index_of_files: List of existing Markdown files.
+    Returns:
+        True when done.
     """
-    global TAGS, SEPARATOR  # get global variables from config
-    for row in plan:  # loop thru plan by rows
-        splitted_row = row.split(SEPARATOR)  # split row to list 
-        print("ROW :",splitted_row)  # control print 
-        links = splitted_row[1:] # get rid of symbol from last link
-        if len(splitted_row) > 1:  # if more then 1 
+    global TAGS, SEPARATOR
+    for row in plan:
+        splitted_row = row.split(SEPARATOR)
+        links = splitted_row[1:]
+        if len(splitted_row) > 1:
             data = prepare_data_custom(splitted_row[0], prepare_multiple_links(links), TAGS)
-        filename = splitted_row[0] + '.md'
-        print(filename)  # control print created filename
-        # check if file already exists
-        if filename_exists(filename, index_of_files) is True:
-            print("FILE ALREADY EXISTS")
-        elif filename_exists(filename,index_of_files) is False:
-            write_md(filename=filename, data=data)  # if file is new write him down
-            print("SAVED", filename)  # control print 
+            filename = splitted_row[0] + '.md'
+            if filename_exists(filename, index_of_files):
+                print(f"FILE ALREADY EXISTS: {filename}")
+            else:
+                write_md(filename=filename, data=data)
     return True
-    
-
 
 if __name__ == "__main__":
-
-    """ 
-    M A I N   P R O G R A M M - U N D E R   D E V E L O P M E N T
-    
-    """
-    print(SEPARATOR, TAGS, END_SYMBOL, AUTHOR)  # Control print
-
-    # check if file was passed as argument via CLI
-    if len(sys.argv) == 1:
-        print("NO FILE ARGUMENT")
-    else:
+    print(SEPARATOR, TAGS, END_SYMBOL, AUTHOR)
+    filename = PLANFILE
+    if len(sys.argv) > 1:
         filename = sys.argv[1]
-
-    # READ FILE CONTAINING PLAN
     try:
-        plan = read_plan(filename=PLANFILE)  # use function read plan from IO.io_plan
+        plan = read_plan(filename=filename)
     except FileNotFoundError:
         plan = []
         print("PLAN FILE DOESN'T EXIST")
-        # TODO Make a New Plan File
-    finally:
-        # TODO Log if plan file was successfully loaded
-        pass
-    
-    # get index of existing Markdown files
-    index_of_files = get_index()  # use function get_index from IO.io_plan
-    print(index_of_files)  # control print all collected Markdown files
-    
-    #check if doesnt contain duplicity
-    a = duplicity_check_plan(plan)  # TODO Does'nt work
+    index_of_files = get_index()
+    print(index_of_files)
+    a = duplicity_check_plan(plan)
     print(a)
-
-    # save prepared data to files
-    prepare_data_2_save(plan, index_of_files)  #  reads row from plan and generates Markdown file
-
-    a = prepare_multiple_links(["hallo", "hallo"])
-    print(a)
-
-    print(sys.argv)  # control print all arguments passed via CLI
-
-    
-
-
-    """
-
-    a = prepare_data_custom(name="# Andrea", links= "[[Hello]]", tags="#python")
-    print(a)
-
-    """
-
-    
-
-    
-
-
-    
-    
 
