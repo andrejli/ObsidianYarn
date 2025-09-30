@@ -150,4 +150,5 @@ if __name__ == "__main__":
     print(index_of_files)
     a = duplicity_check_plan(plan)
     print(a)
+    prepare_data_2_save(plan, index_of_files)
 
