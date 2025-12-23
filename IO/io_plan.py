@@ -1,8 +1,7 @@
 
 import os
-from configs.config import SEPARATOR
-
-END_SYMBOL = ""
+from configs.config import SEPARATOR, END_SYMBOL
+from IO.exceptions import PlanFileError
 
 def read_plan(filename: str) -> list:
     """
@@ -13,16 +12,24 @@ def read_plan(filename: str) -> list:
         List of strings, each representing a row in the plan.
     """
     result = []
+    if not filename:
+        raise PlanFileError("Plan filename cannot be empty")
+    
     try:
         with open(filename, mode="r", encoding="utf8") as f:
             for row in f:
-                if row == "<>\n":  # End symbol
+                if row == END_SYMBOL:  # End symbol from config
                     break
                 result.append(row)
     except FileNotFoundError:
-        print(f"Plan file not found: {filename}")
+        raise PlanFileError(f"Plan file not found: {filename}")
+    except PermissionError:
+        raise PlanFileError(f"Permission denied reading plan file: {filename}")
+    except UnicodeDecodeError as e:
+        raise PlanFileError(f"Invalid encoding in plan file {filename}: {e}")
     except Exception as e:
-        print(f"Error reading plan file: {e}")
+        raise PlanFileError(f"Error reading plan file {filename}: {e}")
+    
     return result
 
 def get_index(path: str = None) -> list:
@@ -32,15 +39,26 @@ def get_index(path: str = None) -> list:
         path: Directory to search for Markdown files. Defaults to current working directory.
     Returns:
         List of Markdown filenames.
+    Raises:
+        PlanFileError: If directory cannot be accessed.
     """
     if path is None:
         path = os.getcwd()
+    
+    if not os.path.exists(path):
+        raise PlanFileError(f"Directory does not exist: {path}")
+    
+    if not os.path.isdir(path):
+        raise PlanFileError(f"Path is not a directory: {path}")
+    
     try:
         content = os.listdir(path)
         result = [i for i in content if i.endswith('.md')]
+    except PermissionError:
+        raise PlanFileError(f"Permission denied accessing directory: {path}")
     except Exception as e:
-        print(f"Error listing directory {path}: {e}")
-        result = []
+        raise PlanFileError(f"Error listing directory {path}: {e}")
+    
     return result
 
 def file_is_markdown(path: str) -> bool:

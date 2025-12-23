@@ -1,0 +1,21 @@
+SarajevoAssassination	FranzFerdinand	SophieChotek	GavriloPrincip	LatinBridge	1914-06-28	#historical-event
+FranzFerdinand	Archduke	AustriaHungary	SophieChotek	SarajevoAssassination	#victim
+SophieChotek	Duchess	FranzFerdinand	SarajevoAssassination	#victim
+GavriloPrincip	BlackHand	YoungBosnia	SarajevoAssassination	Weapon	#assassin
+BlackHand	SecretSociety	Serbia	GavriloPrincip	NedeljkoCabrinovic	TrifkoCrabez	#organization
+YoungBosnia	RevolutionaryMovement	GavriloPrincip	SarajevoAssassination	#organization
+LatinBridge	Location	Sarajevo	SarajevoAssassination	FatalShot	#location
+Sarajevo	BosniaHerzegovina	AustriaHungary	SarajevoAssassination	LatinBridge	#location
+Timeline-Morning	1914-06-28-10:00	ArrivalAtStation	CityHall	#timeline
+Timeline-Attempt1	1914-06-28-10:15	NedeljkoCabrinovic	BombAttack	Failed	#timeline
+Timeline-CityHall	1914-06-28-10:45	Speech	FranzFerdinand	RouteChange	#timeline
+Timeline-FatalMoment	1914-06-28-11:15	LatinBridge	GavriloPrincip	FatalShot	#timeline
+Weapon	BrowningPistol	GavriloPrincip	FatalShot	SerialM19074	#evidence
+FatalShot	Timeline-FatalMoment	FranzFerdinand	SophieChotek	Death	#event
+Aftermath	WWI	JulyUltimatum	AustriaDeclaresWar	1914-07-28	#consequences
+JulyUltimatum	AustriaHungary	Serbia	Aftermath	1914-07-23	#document
+AustriaDeclaresWar	1914-07-28	WWI	AustriaHungary	Serbia	#event
+WWI	WorldWar1	1914-1918	Aftermath	SarajevoAssassination	#historical-event
+Trial	GavriloPrincip	Verdict	1914-10-28	Prison	#legal
+Verdict	Guilty	GavriloPrincip	20YearsSentence	YoungAge	#legal
+<>

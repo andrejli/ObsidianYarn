@@ -1,6 +1,7 @@
 
 import os
 import re
+from IO.exceptions import TemplateError
 
 class TemplateReader:
 	"""
@@ -16,7 +17,15 @@ class TemplateReader:
 		"""
 		Reads the template file line by line, storing each row in self.rows.
 		Stops reading if more than 30 consecutive blank lines are encountered.
+		Raises:
+			TemplateError: If template file cannot be read.
 		"""
+		if not self.template_file:
+			raise TemplateError("Template filename cannot be empty")
+		
+		if not os.path.exists(self.template_file):
+			raise TemplateError(f"Template file not found: {self.template_file}")
+		
 		blank_counter = 0
 		counter = 0
 		try:
@@ -30,12 +39,12 @@ class TemplateReader:
 						blank_counter = 0
 					if blank_counter > 30:
 						break
-		except FileNotFoundError:
-			print(f"Template file not found: {self.template_file}")
-			self.rows = {}
+		except PermissionError:
+			raise TemplateError(f"Permission denied reading template: {self.template_file}")
+		except UnicodeDecodeError as e:
+			raise TemplateError(f"Invalid encoding in template {self.template_file}: {e}")
 		except Exception as e:
-			print(f"Error reading template: {e}")
-			self.rows = {}
+			raise TemplateError(f"Error reading template {self.template_file}: {e}")
 
 	def purge_last30blankrows(self):
 		"""
@@ -47,17 +56,11 @@ class TemplateReader:
 
 	def seek_tags_and_links(self):
 		"""
-		Scans self.rows for <Tags> and <Links> placeholders.
-		Returns a dictionary with row index as key and tuple (row_content, match_span) as value for found placeholders.
+		Scans self.rows for template placeholders like <Name>, <Tags>, <Links>, etc.
+		Returns the complete dictionary of all template rows.
 		"""
-		found = {}
-		for i in range(len(self.rows)):
-			hit = re.search(r'<[A-Za-z]+>', self.rows[i])
-			if hit:
-				tag = hit.group(0)
-				if tag == '<Tags>' or tag == '<Links>':
-					found[i] = (self.rows[i], hit.span())
-		return found if found else self.rows
+		# Return all rows - placeholders will be processed during generation
+		return self.rows
 
 
 

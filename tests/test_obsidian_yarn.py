@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from IO.io_plan import read_plan, duplicity_check_plan, file_is_markdown, get_index, filename_exists
 from IO.template_reader import TemplateReader
+from IO.exceptions import PlanFileError, TemplateError
 
 # Get project root directory (parent of tests directory)
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
@@ -47,3 +48,24 @@ def test_filename_exists():
     index = ["test_plan"]  # MOCK index of files
     plan_file = "test_plan"  # plan file without PATH
     assert filename_exists(plan_file, index) is True
+
+def test_plan_file_not_found():
+    """Test that PlanFileError is raised for non-existent file"""
+    with pytest.raises(PlanFileError):
+        read_plan("nonexistent_file.txt")
+
+def test_template_file_not_found():
+    """Test that TemplateError is raised for non-existent template"""
+    obj = TemplateReader(filename="nonexistent_template.txt")
+    with pytest.raises(TemplateError):
+        obj.read_template()
+
+def test_get_index_invalid_path():
+    """Test that PlanFileError is raised for invalid directory"""
+    with pytest.raises(PlanFileError):
+        get_index("/nonexistent/path/to/directory")
+
+def test_empty_plan_filename():
+    """Test that PlanFileError is raised for empty filename"""
+    with pytest.raises(PlanFileError):
+        read_plan("")

@@ -1,11 +1,15 @@
-43242	5643543
-534543	5435435
-45324	5435643
-45324	5435654
-54354	534543
-45324	5435654
-45324	5435654
-45324	5435654
-45324	5435654
-5435654 45324
+﻿HomePage	About	Projects	Learning	Contact	#main
+About	HomePage	Skills	Experience	Resume	#personal
+Projects	HomePage	WebDev	Python	DataScience	#portfolio
+Skills	About	Python	JavaScript	SQL	Git	#technical
+Experience	About	CompanyA	CompanyB	Freelance	#career
+Learning	HomePage	Books	Courses	Articles	#knowledge
+Books	Learning	CleanCode	DesignPatterns	Algorithms	#reading
+Courses	Learning	WebDevelopment	MachineLearning	CloudComputing	#education
+Python	Projects	Skills	Django	FastAPI	DataAnalysis	#programming
+JavaScript	Skills	React	NodeJS	TypeScript	#programming
+WebDev	Projects	FrontendProjects	BackendProjects	FullStack	#development
+DataScience	Projects	MachineLearning	Visualization	Statistics	#analytics
+Contact	HomePage	Email	LinkedIn	GitHub	Twitter	#social
+Git	Skills	GitHub	GitFlow	BestPractices	#tools
 <>
